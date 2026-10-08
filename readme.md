@@ -22,8 +22,7 @@ votaciones-api/
 ├── database/
 │   └── init.sql
 ├── docs/
-│   ├── estadisticas-swagger.png
-│   └── estadisticas-postman.png
+│   └── PostmanTests
 ├── src/
 │   └── main/
 │       ├── java/com/votaciones/
