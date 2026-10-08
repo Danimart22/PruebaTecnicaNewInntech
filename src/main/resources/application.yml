@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/votaciones}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+  spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+jwt:
+  secret: ${JWT_SECRET:cambia-esta-clave-por-una-de-mas-de-32-caracteres}
+  expiration-ms: 3600000
