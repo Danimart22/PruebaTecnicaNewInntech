@@ -19,6 +19,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
+    // Crea el usuario con la contraseña encriptada y devuelve su token; falla si el usuario ya existe
     public TokenResponse register(AuthRequest request) {
         if (userRepository.existsByUsername(request.username())) {
             throw new ApiException(HttpStatus.CONFLICT, "El usuario ya existe");
@@ -27,6 +28,7 @@ public class AuthService {
         return new TokenResponse(jwtService.generate(request.username()));
     }
 
+    // Verifica usuario y contraseña y devuelve un token; falla si las credenciales son incorrectas
     public TokenResponse login(AuthRequest request) {
         AppUser user = userRepository.findByUsername(request.username()).filter(u -> passwordEncoder.matches(request.password(), u.getPassword())).orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Credenciales inválidas"));
         return new TokenResponse(jwtService.generate(user.getUsername()));

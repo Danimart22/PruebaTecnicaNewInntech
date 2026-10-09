@@ -17,16 +17,19 @@ public class JwtService {
     private final SecretKey key;
     private final long expirationMs;
 
+    // Crea la clave de firma y guarda el tiempo de expiración a partir de la configuración
     public JwtService(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration-ms}") long expirationMs) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expirationMs = expirationMs;
     }
 
+    // Genera un token JWT firmado para el usuario con su fecha de expiración
     public String generate(String username) {
         Date now = new Date();
         return Jwts.builder().subject(username).issuedAt(now).expiration(new Date(now.getTime() + expirationMs)).signWith(key).compact();
     }
 
+    // Valida el token y devuelve el nombre de usuario, o vacío si es inválido o expiró
     public Optional<String> extractUsername(String token) {
         try {
             return Optional.ofNullable(Jwts.parser().verifyWith(key).build()

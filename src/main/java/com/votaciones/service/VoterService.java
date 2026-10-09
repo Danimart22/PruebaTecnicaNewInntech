@@ -25,6 +25,7 @@ public class VoterService {
     private final VoterRepository voterRepository;
     private final CandidateRepository candidateRepository;
 
+    // Registra un votante; falla si el correo ya existe o si hay un candidato con ese nombre
     @Transactional
     public VoterResponse create(VoterRequest request) {
         if (voterRepository.existsByEmailIgnoreCase(request.email())) {
@@ -37,16 +38,19 @@ public class VoterService {
         return VoterResponse.from(voterRepository.save(voter));
     }
 
+    // Devuelve una página de votantes filtrados por nombre, correo y si ya votaron
     @Transactional(readOnly = true)
     public Page<VoterResponse> list(String name, String email, Boolean hasVoted, Pageable pageable) {
         return voterRepository.findAll(filters(name, email, hasVoted), pageable).map(VoterResponse::from);
     }
 
+    // Devuelve un votante por su ID
     @Transactional(readOnly = true)
     public VoterResponse get(Long id) {
         return VoterResponse.from(find(id));
     }
 
+    // Elimina un votante; falla si ya votó
     @Transactional
     public void delete(Long id) {
         Voter voter = find(id);
@@ -56,10 +60,12 @@ public class VoterService {
         voterRepository.delete(voter);
     }
 
+    // Busca un votante por ID; falla si no existe
     private Voter find(Long id) {
         return voterRepository.findById(id).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Votante no encontrado"));
     }
 
+    // Arma los filtros de búsqueda por nombre, correo y estado de voto, ignorando mayúsculas
     private Specification<Voter> filters(String name, String email, Boolean hasVoted) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();

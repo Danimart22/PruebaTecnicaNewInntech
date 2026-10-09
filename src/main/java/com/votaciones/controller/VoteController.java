@@ -18,17 +18,20 @@ public class VoteController {
 
     private final VoteService voteService;
 
+    // Registra el voto de un votante por un candidato
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public VoteResponse cast(@Valid @RequestBody VoteRequest request) {
         return voteService.cast(request);
     }
 
+    // Lista todos los votos emitidos
     @GetMapping
     public List<VoteResponse> list() {
         return voteService.list();
     }
 
+    // Devuelve el total de votos, los votantes que votaron y el porcentaje por candidato
     @GetMapping("/statistics")
     public VoteStatistics statistics() {
         return voteService.statistics();

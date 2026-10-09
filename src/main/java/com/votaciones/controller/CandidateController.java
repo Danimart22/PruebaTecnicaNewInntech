@@ -18,12 +18,14 @@ public class CandidateController {
 
     private final CandidateService candidateService;
 
+    // Registra un nuevo candidato
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CandidateResponse create(@Valid @RequestBody CandidateRequest request) {
         return candidateService.create(request);
     }
 
+    // Lista los candidatos con filtros por nombre y partido, y paginación
     @GetMapping
     public Page<CandidateResponse> list(
             @RequestParam(required = false) String name,
@@ -32,11 +34,13 @@ public class CandidateController {
         return candidateService.list(name, party, pageable);
     }
 
+    // Devuelve un candidato por su ID
     @GetMapping("/{id}")
     public CandidateResponse get(@PathVariable Long id) {
         return candidateService.get(id);
     }
 
+    // Elimina un candidato por su ID
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {

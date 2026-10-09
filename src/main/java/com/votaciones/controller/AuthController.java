@@ -15,12 +15,14 @@ public class AuthController {
 
     private final AuthService authService;
 
+    // Registra un usuario nuevo y devuelve su token JWT
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public TokenResponse register(@Valid @RequestBody AuthRequest request) {
         return authService.register(request);
     }
 
+    // Valida las credenciales y devuelve un token JWT
     @PostMapping("/login")
     public TokenResponse login(@Valid @RequestBody AuthRequest request) {
         return authService.login(request);

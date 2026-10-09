@@ -20,6 +20,8 @@ public class SecurityConfig {
 
     private final JwtService jwtService;
 
+    // Define las reglas de seguridad: sin sesiones, rutas públicas (auth y Swagger),
+    // el resto exige token JWT, y responde 401 si no hay autenticación
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable).sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(a -> a
@@ -28,6 +30,7 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthFilter(jwtService), UsernamePasswordAuthenticationFilter.class).build();
     }
 
+    // Crea el codificador que encripta las contraseñas con BCrypt
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

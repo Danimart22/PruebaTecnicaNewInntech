@@ -25,6 +25,7 @@ public class CandidateService {
     private final CandidateRepository candidateRepository;
     private final VoterRepository voterRepository;
 
+    // Registra un candidato; falla si ya existe un votante con ese nombre
     @Transactional
     public CandidateResponse create(CandidateRequest request) {
         if (voterRepository.existsByNameIgnoreCase(request.name())) {
@@ -34,16 +35,19 @@ public class CandidateService {
         return CandidateResponse.from(candidateRepository.save(candidate));
     }
 
+    // Devuelve una página de candidatos filtrados por nombre y partido
     @Transactional(readOnly = true)
     public Page<CandidateResponse> list(String name, String party, Pageable pageable) {
         return candidateRepository.findAll(filters(name, party), pageable).map(CandidateResponse::from);
     }
 
+    // Devuelve un candidato por su ID
     @Transactional(readOnly = true)
     public CandidateResponse get(Long id) {
         return CandidateResponse.from(find(id));
     }
 
+    // Elimina un candidato; falla si ya tiene votos
     @Transactional
     public void delete(Long id) {
         Candidate candidate = find(id);
@@ -53,10 +57,12 @@ public class CandidateService {
         candidateRepository.delete(candidate);
     }
 
+    // Busca un candidato por ID; falla si no existe
     private Candidate find(Long id) {
         return candidateRepository.findById(id).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Candidato no encontrado"));
     }
 
+    // Arma los filtros de búsqueda por nombre y partido, ignorando mayúsculas
     private Specification<Candidate> filters(String name, String party) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();

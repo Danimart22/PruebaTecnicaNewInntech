@@ -27,6 +27,7 @@ public class VoteService {
     private final VoterRepository voterRepository;
     private final CandidateRepository candidateRepository;
 
+    // Registra el voto: valida que el votante y el candidato existan y que no haya votado, suma el voto al candidato y marca al votante como que ya votó
     @Transactional
     public VoteResponse cast(VoteRequest request) {
         Voter voter = voterRepository.findByIdForUpdate(request.voterId()).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Votante no encontrado"));
@@ -40,11 +41,13 @@ public class VoteService {
         return VoteResponse.from(vote);
     }
 
+    // Devuelve todos los votos emitidos
     @Transactional(readOnly = true)
     public List<VoteResponse> list() {
         return voteRepository.findAll().stream().map(VoteResponse::from).toList();
     }
 
+    // Calcula el total de votos, los votantes que votaron y los votos y porcentaje de cada candidato
     @Transactional(readOnly = true)
     public VoteStatistics statistics() {
         long total = voteRepository.count();
@@ -57,6 +60,7 @@ public class VoteService {
         return new VoteStatistics(total, voterRepository.countByHasVoted(true), candidates);
     }
 
+    // Redondea un número a dos decimales
     private double round(double value) {
         return Math.round(value * 100.0) / 100.0;
     }

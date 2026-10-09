@@ -17,17 +17,20 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // Responde con el código y mensaje de las excepciones propias de la API
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ErrorResponse> handleApi(ApiException ex) {
         return build(ex.getStatus(), ex.getMessage());
     }
 
+    // Responde 400 con los campos que fallaron la validación
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
         String message = ex.getBindingResult().getFieldErrors().stream().map(e -> e.getField() + ": " + e.getDefaultMessage()).collect(Collectors.joining("; "));
         return build(HttpStatus.BAD_REQUEST, message);
     }
 
+    // Responde 400 cuando el JSON, los parámetros o el orden de la consulta son inválidos
     @ExceptionHandler({
             HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class,
@@ -38,11 +41,13 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, "Solicitud inválida");
     }
 
+    // Responde 409 cuando la base de datos rechaza el dato por duplicado o relación
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleIntegrity(DataIntegrityViolationException ex) {
         return build(HttpStatus.CONFLICT, "Conflicto de integridad de datos");
     }
 
+    // Arma la respuesta de error con fecha, código, descripción y mensaje
     private ResponseEntity<ErrorResponse> build(HttpStatus status, String message) {
         return ResponseEntity.status(status).body(new ErrorResponse(Instant.now(), status.value(), status.getReasonPhrase(), message));
     }
