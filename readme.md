@@ -333,11 +333,6 @@ curl http://localhost:8080/votes/statistics -H "Authorization: Bearer $TOKEN"
 }
 ```
 
-### Capturas de las estadísticas
-
-![Estadísticas en Swagger](docs/estadisticas-swagger.png)
-
-![Estadísticas en Postman](docs/estadisticas-postman.png)
 
 ## Validaciones y reglas de negocio
 
